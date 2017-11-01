@@ -1,4 +1,4 @@
-package us.cuatoi.jinio.server.message;
+package us.cuatoi.jinio.core.message;
 
 import io.minio.ErrorCode;
 import io.minio.messages.ErrorResponse;
@@ -48,7 +48,7 @@ public class ErrorResponseWriter {
         return this;
     }
 
-    public void write(){
+    public boolean write(){
         try {
             ErrorResponse er = new ErrorResponse(error, bucketName, objectName, resource, requestId, serverId);
             response.setStatus(500);
@@ -56,6 +56,7 @@ public class ErrorResponseWriter {
             response.setHeader("x-amz-request-id", requestId);
             response.setHeader("x-amz-version-id", "1.0");
             response.getWriter().write(er.toString());
+            return true;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

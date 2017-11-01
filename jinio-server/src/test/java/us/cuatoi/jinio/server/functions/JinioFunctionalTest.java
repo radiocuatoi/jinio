@@ -6,7 +6,7 @@ public class JinioFunctionalTest {
                 "http://localhost:8080",
                 "Q3AM3UQ867SPQQA43P2F",
                 "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG",
-                "us-west-1"
+                "cc"
         });
     }
 }
