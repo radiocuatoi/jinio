@@ -9,9 +9,8 @@ import us.cuatoi.jinio.s3.auth.AWS4SignerBase;
 import us.cuatoi.jinio.s3.auth.AWS4VerifierForAuthorizationHeader;
 import us.cuatoi.jinio.s3.exception.JinioException;
 import us.cuatoi.jinio.s3.message.ErrorResponseWriter;
-import us.cuatoi.jinio.s3.operation.bucket.DeleteBucketLocationOperation;
-import us.cuatoi.jinio.s3.operation.bucket.GetBucketLocationOperation;
-import us.cuatoi.jinio.s3.operation.bucket.PutBucketOperation;
+import us.cuatoi.jinio.s3.operation.bucket.*;
+import us.cuatoi.jinio.s3.operation.object.PutObjectOperation;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -46,29 +45,48 @@ public class JinioHandler {
         try {
             new AWS4VerifierForAuthorizationHeader(context, request).verifyHeaders();
             byte[] data = readAndVerifyContent();
-
-            String requestURI = request.getRequestURI();
-            if (matchRequest("put", 1)) {
+            if (targetRoot() && isGet()) {
+                //GET Buckets
+                return new GetBucketsOperation()
+                        .setRequest(request).setResponse(response).setContext(context)
+                        .setRequestId(requestId).setServerId(serverId)
+                        .execute();
+            }
+            //Bucket operation
+            if (targetBucket() && isHead()) {
+                //HEAD Bucket
+                return new HeadBucketOperation()
+                        .setRequest(request).setResponse(response).setContext(context)
+                        .setRequestId(requestId).setServerId(serverId)
+                        .execute();
+            } else if (targetBucket() && isPut()) {
                 //PUT Bucket
                 return new PutBucketOperation()
                         .setRequest(request).setResponse(response).setContext(context)
                         .setRequestId(requestId).setServerId(serverId)
                         .execute();
-            } else if (matchRequest("get", 1, 1, "location")) {
+            } else if (targetBucket() && isGet() && oneParameter("location")) {
                 //GET Bucket location
                 return new GetBucketLocationOperation()
                         .setRequest(request).setResponse(response).setContext(context)
                         .setRequestId(requestId).setServerId(serverId)
                         .execute();
-            } else if (matchRequest("delete", 1)) {
+            } else if (targetBucket() && isDelete()) {
                 //DELETE Bucket
                 return new DeleteBucketLocationOperation()
                         .setRequest(request).setResponse(response).setContext(context)
                         .setRequestId(requestId).setServerId(serverId)
                         .execute();
-            } else {
-                throw new JinioException(ErrorCode.NOT_IMPLEMENTED);
             }
+            //Object operation
+            if (targetObject() && isPut()) {
+                //PUT Object
+                return new PutObjectOperation(request.getRequestURI())
+                        .setRequest(request).setResponse(response).setContext(context)
+                        .setRequestId(requestId).setServerId(serverId)
+                        .execute();
+            }
+            throw new JinioException(ErrorCode.NOT_IMPLEMENTED);
         } catch (Exception e) {
             ErrorCode code = ErrorCode.INTERNAL_ERROR;
             String bucketName = null;
@@ -85,6 +103,40 @@ public class JinioHandler {
                     .setError(code)
                     .write();
         }
+    }
+
+    private boolean targetObject() {
+        return countMatches(request.getRequestURI(), '/') > 1;
+    }
+
+    private boolean isDelete() {
+        return equalsIgnoreCase(method, "delete");
+    }
+
+    private boolean oneParameter(String name) {
+        boolean parameterSizeCorrect = request.getParameterMap().size() == 1;
+        boolean parameterExists = isBlank(name) || request.getParameter(name) != null;
+        return parameterSizeCorrect && parameterExists;
+    }
+
+    private boolean isPut() {
+        return equalsIgnoreCase(method, "put");
+    }
+
+    private boolean isHead() {
+        return equalsIgnoreCase(method, "head");
+    }
+
+    private boolean targetBucket() {
+        return !targetRoot() && countMatches(request.getRequestURI(), '/') == 1;
+    }
+
+    private boolean targetRoot() {
+        return equalsIgnoreCase(request.getRequestURI(), "/");
+    }
+
+    private boolean isGet() {
+        return equalsIgnoreCase(method, "get");
     }
 
     private boolean matchRequest(String method, int slashCount) {
