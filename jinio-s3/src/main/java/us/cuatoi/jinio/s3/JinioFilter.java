@@ -44,7 +44,10 @@ public abstract class JinioFilter implements Filter {
         logger.info("request.requestURI=" + request.getRequestURI());
         logger.info("request.requestURL=" + request.getRequestURL());
         logger.info("request.method=" + request.getMethod());
-        logger.info("request.parameterMap=" + request.getParameterMap());
+        request.getParameterMap().forEach((key, value) -> {
+            logger.info("request.headers." + key + "=" + value);
+
+        });
         Enumeration<String> headerNames = request.getHeaderNames();
         while (headerNames.hasMoreElements()) {
             String key = headerNames.nextElement();

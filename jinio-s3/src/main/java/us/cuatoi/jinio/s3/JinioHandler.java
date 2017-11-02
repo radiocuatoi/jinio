@@ -9,8 +9,9 @@ import us.cuatoi.jinio.s3.auth.AWS4SignerBase;
 import us.cuatoi.jinio.s3.auth.AWS4VerifierForAuthorizationHeader;
 import us.cuatoi.jinio.s3.exception.JinioException;
 import us.cuatoi.jinio.s3.message.ErrorResponseWriter;
-import us.cuatoi.jinio.s3.operation.bucket.CreateBucketOperation;
+import us.cuatoi.jinio.s3.operation.bucket.DeleteBucketLocationOperation;
 import us.cuatoi.jinio.s3.operation.bucket.GetBucketLocationOperation;
+import us.cuatoi.jinio.s3.operation.bucket.PutBucketOperation;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -47,17 +48,21 @@ public class JinioHandler {
             byte[] data = readAndVerifyContent();
 
             String requestURI = request.getRequestURI();
-            if (equalsAnyIgnoreCase(method, "put") && countMatches(requestURI, '/') == 1) {
+            if (matchRequest("put", 1)) {
                 //PUT Bucket
-                return new CreateBucketOperation()
+                return new PutBucketOperation()
                         .setRequest(request).setResponse(response).setContext(context)
                         .setRequestId(requestId).setServerId(serverId)
                         .execute();
-            } else if (equalsAnyIgnoreCase(method, "get")
-                    && countMatches(requestURI, '/') == 1
-                    && request.getParameter("location") != null) {
+            } else if (matchRequest("get", 1, 1, "location")) {
                 //GET Bucket location
                 return new GetBucketLocationOperation()
+                        .setRequest(request).setResponse(response).setContext(context)
+                        .setRequestId(requestId).setServerId(serverId)
+                        .execute();
+            } else if (matchRequest("delete", 1)) {
+                //DELETE Bucket
+                return new DeleteBucketLocationOperation()
                         .setRequest(request).setResponse(response).setContext(context)
                         .setRequestId(requestId).setServerId(serverId)
                         .execute();
@@ -66,7 +71,7 @@ public class JinioHandler {
             }
         } catch (Exception e) {
             ErrorCode code = ErrorCode.INTERNAL_ERROR;
-            String bucketName =null;
+            String bucketName = null;
             if (e instanceof JinioException) {
                 JinioException je = (JinioException) e;
                 code = je.getCode();
@@ -80,6 +85,18 @@ public class JinioHandler {
                     .setError(code)
                     .write();
         }
+    }
+
+    private boolean matchRequest(String method, int slashCount) {
+        return matchRequest(method, slashCount, 0, null);
+    }
+
+    private boolean matchRequest(String method, int slashCount, int parameterCount, String parameterName) {
+        boolean methodMatch = equalsIgnoreCase(this.method, method);
+        boolean slashMatch = slashCount == 0 || countMatches(request.getRequestURI(), '/') == slashCount;
+        boolean parameterCountMatch = parameterCount == 0 || request.getParameterMap().size() == parameterCount;
+        boolean parameterMatch = isBlank(parameterName) || request.getParameter(parameterName) != null;
+        return methodMatch && slashMatch && parameterCountMatch && parameterMatch;
     }
 
     private byte[] readAndVerifyContent() throws IOException {

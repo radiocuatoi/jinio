@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class CreateBucketOperation extends BucketOperation {
+public class PutBucketOperation extends BucketOperation {
 
 
     @Override
@@ -13,12 +13,12 @@ public class CreateBucketOperation extends BucketOperation {
         String bucketName = getBucketName();
         Path bucketPath = context.getDataPath().resolve(bucketName);
         Files.createDirectories(bucketPath);
-        logger.info("Created directory at:" + bucketPath.toString());
+        logger.info("PUT Bucket:" + bucketName);
+        logger.info("PUT Bucket:Created " + bucketPath.toString());
         setCommonHeaders();
         response.setStatus(HttpServletResponse.SC_OK);
         return true;
     }
-
 
 
 }

@@ -14,14 +14,19 @@ public class GetBucketLocationOperation extends BucketOperation {
     public boolean execute() throws IOException {
         String bucketName = getBucketName();
         verifyBucketExists(bucketName);
+
+        LocationConstraintResponse lcr = new LocationConstraintResponse();
+        if (!equalsIgnoreCase(context.getRegion(), DEFAULT_REGION)) {
+            lcr.setRegion(context.getRegion());
+        }
+        String content = lcr.toString();
+
         setCommonHeaders();
         response.setStatus(HttpServletResponse.SC_OK);
-        LocationConstraintResponse response = new LocationConstraintResponse();
-        if (!equalsIgnoreCase(context.getRegion(), DEFAULT_REGION)) {
-            response.setRegion(context.getRegion());
-        }
-        this.response.getWriter().write(response.toString());
-        logger.info("GET Bucket location:" + bucketName + "\n" + response.toString());
+        response.getWriter().write(content);
+        response.setContentType("application/xml; charset=utf-8");
+        logger.info("GET Bucket location:" + bucketName);
+        logger.info("GET Bucket location:" + content);
         return true;
     }
 
