@@ -15,6 +15,9 @@ dependencies {
     compile('io.minio:minio:3.0.8')
     compile('org.apache.commons:commons-lang3:3.6')
     compile('org.slf4j:slf4j-api:1.7.25')
+    compile('commons-io:commons-io:2.6')
+    compile('com.google.guava:guava:23.3-jre')
+
     compileOnly('javax.servlet:javax.servlet-api:3.1.0')
 
     testCompile('junit:junit:4.12')

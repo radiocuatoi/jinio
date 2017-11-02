@@ -10,9 +10,9 @@ import org.springframework.context.annotation.Bean;
 public class ServerApplication {
 
     @Bean
-    FilterRegistrationBean jinioFilterRegistration(@Autowired SpringJinioFilter springJinioFilter) {
+    FilterRegistrationBean jinioFilterRegistration(@Autowired SimpleJinioFilter simpleJinioFilter) {
         FilterRegistrationBean registration = new FilterRegistrationBean();
-        registration.setFilter(springJinioFilter);
+        registration.setFilter(simpleJinioFilter);
         registration.addUrlPatterns("/*");
         return registration;
     }

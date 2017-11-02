@@ -25,6 +25,7 @@ repositories {
 
 dependencies {
     compile project(':jinio-s3')
+    compile('com.google.jimfs:jimfs:1.1')
 
     compile('org.springframework.boot:spring-boot-starter-web')
     testCompile('org.springframework.boot:spring-boot-starter-test')

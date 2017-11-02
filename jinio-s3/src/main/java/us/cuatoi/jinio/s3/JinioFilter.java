@@ -7,6 +7,7 @@ import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Enumeration;
 
 import static org.apache.commons.lang3.StringUtils.isAnyBlank;
@@ -16,9 +17,9 @@ import static org.apache.commons.lang3.StringUtils.isAnyBlank;
  * It will pass the request back to the chain if it can not be handled by Jinio
  */
 public abstract class JinioFilter implements Filter {
-
+    public static final String DEFAULT_REGION = "us-east-1";
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    private String region = "us-east-1";
+    private String region = DEFAULT_REGION;
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -43,6 +44,7 @@ public abstract class JinioFilter implements Filter {
         logger.info("request.requestURI=" + request.getRequestURI());
         logger.info("request.requestURL=" + request.getRequestURL());
         logger.info("request.method=" + request.getMethod());
+        logger.info("request.parameterMap=" + request.getParameterMap());
         Enumeration<String> headerNames = request.getHeaderNames();
         while (headerNames.hasMoreElements()) {
             String key = headerNames.nextElement();
@@ -70,4 +72,6 @@ public abstract class JinioFilter implements Filter {
     }
 
     public abstract String getSecretKey(String accessKey);
+
+    public abstract Path getDataPath();
 }

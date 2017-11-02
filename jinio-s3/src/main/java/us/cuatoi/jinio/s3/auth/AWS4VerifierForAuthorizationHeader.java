@@ -36,7 +36,7 @@ public class AWS4VerifierForAuthorizationHeader {
             AWS4Authorization authorization = new AWS4Authorization(authorizationHeader);
             String bodyHash = request.getHeader("x-amz-content-sha256");
             if (isBlank(bodyHash)) {
-                throw new JinioException(ErrorCode.BAD_DIGEST);
+                throw new JinioException(ErrorCode.MISSING_SECURITY_HEADER);
             }
             String method = request.getMethod();
             String serviceName = authorization.getServiceName();
