@@ -1,6 +1,6 @@
 package us.cuatoi.jinio.s3.auth;
 
-import us.cuatoi.jinio.s3.util.BinaryUtils;
+import us.cuatoi.jinio.s3.auth.util.BinaryUtils;
 
 import java.net.URL;
 import java.util.Date;
@@ -11,6 +11,8 @@ import java.util.Map;
 /**
  * Sample AWS4 signer demonstrating how to sign requests to Amazon S3 using
  * query string parameters.
+ *
+ * Credit to Amazon S3
  */
 public class AWS4SignerForQueryParameterAuth extends AWS4SignerBase {
 

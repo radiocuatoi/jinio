@@ -1,7 +1,7 @@
 package us.cuatoi.jinio.s3;
 
 import us.cuatoi.jinio.s3.auth.AWS4SignerForChunkedUpload;
-import us.cuatoi.jinio.s3.util.HttpUtils;
+import us.cuatoi.jinio.s3.auth.util.HttpUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataOutputStream;

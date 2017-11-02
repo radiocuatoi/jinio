@@ -13,9 +13,9 @@ import static org.apache.commons.lang3.StringUtils.isAnyBlank;
 
 /**
  * A filter to handle S3 request.
- * I will pass the request back to the chain if it can not be handled by Jinio
+ * It will pass the request back to the chain if it can not be handled by Jinio
  */
-public class JinioFilter implements Filter {
+public abstract class JinioFilter implements Filter {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private String region = "us-east-1";
@@ -69,7 +69,5 @@ public class JinioFilter implements Filter {
         this.region = region;
     }
 
-    public String getSecretKey(String accessKey) {
-        return "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG";
-    }
+    public abstract String getSecretKey(String accessKey);
 }

@@ -2,6 +2,9 @@ package us.cuatoi.jinio.s3.exception;
 
 import io.minio.ErrorCode;
 
+/**
+ * Wrapper for all Jinio exception. Which is based on Minio java client
+ */
 public class JinioException extends RuntimeException {
     private final ErrorCode code;
 

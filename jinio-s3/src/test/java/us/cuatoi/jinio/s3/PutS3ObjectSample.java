@@ -2,8 +2,8 @@ package us.cuatoi.jinio.s3;
 
 import us.cuatoi.jinio.s3.auth.AWS4SignerBase;
 import us.cuatoi.jinio.s3.auth.AWS4SignerForAuthorizationHeader;
-import us.cuatoi.jinio.s3.util.BinaryUtils;
-import us.cuatoi.jinio.s3.util.HttpUtils;
+import us.cuatoi.jinio.s3.auth.util.BinaryUtils;
+import us.cuatoi.jinio.s3.auth.util.HttpUtils;
 
 import java.net.MalformedURLException;
 import java.net.URL;

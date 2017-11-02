@@ -16,6 +16,9 @@ import java.util.regex.Pattern;
 
 import static us.cuatoi.jinio.s3.auth.AWS4SignerBase.*;
 
+/**
+ * Wrapper class used to parse Authorization header.
+ */
 public class AWS4Authorization {
     public static final Pattern PATTERN = Pattern
             .compile(SCHEME + "-" + ALGORITHM + " Credential=(\\w*)/(\\w*)/([\\w\\-]*)/(\\w*)/aws4_request, SignedHeaders=([\\w;\\-]*), Signature=(\\w*)");

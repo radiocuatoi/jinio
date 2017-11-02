@@ -5,6 +5,9 @@ import io.minio.messages.ErrorResponse;
 
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * DTO class to return error message
+ */
 public class ErrorResponseWriter {
     public final HttpServletResponse response;
     private String bucketName = null;

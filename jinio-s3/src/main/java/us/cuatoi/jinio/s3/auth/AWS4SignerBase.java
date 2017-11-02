@@ -1,7 +1,7 @@
 package us.cuatoi.jinio.s3.auth;
 
-import us.cuatoi.jinio.s3.util.BinaryUtils;
-import us.cuatoi.jinio.s3.util.HttpUtils;
+import us.cuatoi.jinio.s3.auth.util.BinaryUtils;
+import us.cuatoi.jinio.s3.auth.util.HttpUtils;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -13,7 +13,8 @@ import java.util.*;
 
 
 /**
- * Common methods and properties for all AWS4 signer variants
+ * Common methods and properties for all AWS4 signer variants.
+ * Credit to Amazon S3
  */
 public abstract class AWS4SignerBase {
 

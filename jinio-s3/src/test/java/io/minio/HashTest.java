@@ -2,7 +2,7 @@ package io.minio;
 
 import org.junit.Test;
 import us.cuatoi.jinio.s3.auth.AWS4SignerBase;
-import us.cuatoi.jinio.s3.util.BinaryUtils;
+import us.cuatoi.jinio.s3.auth.util.BinaryUtils;
 
 import static org.junit.Assert.assertEquals;
 

@@ -1,4 +1,4 @@
-package us.cuatoi.jinio.s3.util;
+package us.cuatoi.jinio.s3.auth.util;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
