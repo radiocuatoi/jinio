@@ -5,7 +5,7 @@ import io.minio.ErrorCode;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import us.cuatoi.jinio.core.exception.JinioException;
+import us.cuatoi.jinio.s3.exception.JinioException;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

@@ -1,4 +1,4 @@
-package us.cuatoi.jinio.core.message;
+package us.cuatoi.jinio.s3.message;
 
 import io.minio.ErrorCode;
 import io.minio.messages.ErrorResponse;

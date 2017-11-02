@@ -1,4 +1,4 @@
-package us.cuatoi.jinio.core.exception;
+package us.cuatoi.jinio.s3.exception;
 
 import io.minio.ErrorCode;
 

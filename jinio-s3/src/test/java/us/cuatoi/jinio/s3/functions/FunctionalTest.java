@@ -1,4 +1,4 @@
-package us.cuatoi.jinio.server.functions;/*
+package us.cuatoi.jinio.s3.functions;/*
  * Minio Java SDK for Amazon S3 Compatible Cloud Storage,
  * (C) 2015, 2016, 2017 Minio, Inc.
  *
@@ -2538,7 +2538,7 @@ public class FunctionalTest {
      */
     public static void main(String[] args) {
         if (args.length != 4) {
-            System.out.println("usage: us.cuatoi.jinio.server.functions.FunctionalTest <ENDPOINT> <ACCESSKEY> <SECRETKEY> <REGION>");
+            System.out.println("usage: us.cuatoi.jinio.s3.functions.FunctionalTest <ENDPOINT> <ACCESSKEY> <SECRETKEY> <REGION>");
             System.exit(-1);
         }
 

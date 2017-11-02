@@ -1,4 +1,4 @@
-package us.cuatoi.jinio.server.functions;/*
+package us.cuatoi.jinio.s3.functions;/*
  * Minio Java SDK for Amazon S3 Compatible Cloud Storage,
  * (C) 2015, 2016, 2017 Minio, Inc.
  *

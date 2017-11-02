@@ -1,13 +1,14 @@
-package us.cuatoi.jinio.core;
+package us.cuatoi.jinio.s3;
 
 import io.minio.ErrorCode;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import us.cuatoi.jinio.core.exception.JinioException;
-import us.cuatoi.jinio.core.message.ErrorResponseWriter;
 import us.cuatoi.jinio.s3.auth.AWS4Authorization;
+import us.cuatoi.jinio.s3.auth.AWS4SignerBase;
 import us.cuatoi.jinio.s3.auth.AWS4SignerForAuthorizationHeader;
+import us.cuatoi.jinio.s3.exception.JinioException;
+import us.cuatoi.jinio.s3.message.ErrorResponseWriter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,8 +20,6 @@ import java.util.UUID;
 
 import static org.apache.commons.lang3.StringUtils.equalsAnyIgnoreCase;
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static us.cuatoi.jinio.s3.auth.AWS4Authorization.utcDateFormat;
-import static us.cuatoi.jinio.s3.auth.AWS4SignerBase.ISO8601BasicFormat;
 
 
 public class JinioHandler {
@@ -67,19 +66,19 @@ public class JinioHandler {
             String amzDateHeader = request.getHeader("x-amz-date");
             long dateHeader = request.getDateHeader("Date");
             Date date = isBlank(amzDateHeader) ? new Date(dateHeader) :
-                    utcDateFormat(ISO8601BasicFormat).parse(amzDateHeader);
+                    AWS4Authorization.utcDateFormat(AWS4SignerBase.ISO8601BasicFormat).parse(amzDateHeader);
             String computedHeader = signer.computeSignature(headers, queryParams, bodyHash, awsAccessKey, awsSecretKey, date);
-            logger.info("headers=" + headers);
-            logger.info("parameters=" + queryParams);
-            logger.info("bodyHash=" + bodyHash);
-            logger.info("amzDateHeader=" + amzDateHeader);
-            logger.info("dateHeader=" + dateHeader);
-            logger.info("date=" + date);
-            logger.info("url=" + url);
-            logger.info("url.getHost()=" + url.getHost());
-            logger.info("url.getPort()=" + url.getPort());
-            logger.info("a=" + authorizationHeader);
-            logger.info("c=" + computedHeader);
+            logger.debug("headers=" + headers);
+            logger.debug("parameters=" + queryParams);
+            logger.debug("bodyHash=" + bodyHash);
+            logger.debug("amzDateHeader=" + amzDateHeader);
+            logger.debug("dateHeader=" + dateHeader);
+            logger.debug("date=" + date);
+            logger.debug("url=" + url);
+            logger.debug("url.getHost()=" + url.getHost());
+            logger.debug("url.getPort()=" + url.getPort());
+            logger.debug("a=" + authorizationHeader);
+            logger.debug("c=" + computedHeader);
             if (!StringUtils.equals(authorizationHeader, computedHeader)) {
                 throw new JinioException(ErrorCode.INVALID_ACCESS_KEY_ID);
             }

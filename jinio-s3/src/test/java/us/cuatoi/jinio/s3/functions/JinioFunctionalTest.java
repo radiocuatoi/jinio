@@ -1,4 +1,4 @@
-package us.cuatoi.jinio.server.functions;
+package us.cuatoi.jinio.s3.functions;
 
 public class JinioFunctionalTest {
     public static void main(String[] args) {
