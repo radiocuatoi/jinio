@@ -1,5 +1,7 @@
 package us.cuatoi.jinio.s3.auth;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import us.cuatoi.jinio.s3.auth.util.BinaryUtils;
 import us.cuatoi.jinio.s3.auth.util.HttpUtils;
 
@@ -37,7 +39,8 @@ public abstract class AWS4SignerBase {
     
     protected final SimpleDateFormat dateTimeFormat;
     protected final SimpleDateFormat dateStampFormat;
-    
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
+
     /**
      * Create a new AWS V4 signer.
      * 

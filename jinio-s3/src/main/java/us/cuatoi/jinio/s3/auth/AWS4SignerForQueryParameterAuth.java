@@ -88,15 +88,15 @@ public class AWS4SignerForQueryParameterAuth extends AWS4SignerBase {
         String canonicalRequest = getCanonicalRequest(endpointUrl, httpMethod,
                 canonicalizedQueryParameters, canonicalizedHeaderNames,
                 canonicalizedHeaders, bodyHash);
-        System.out.println("--------- Canonical request --------");
-        System.out.println(canonicalRequest);
-        System.out.println("------------------------------------");
+        logger.debug("--------- Canonical request --------");
+        logger.debug(canonicalRequest);
+        logger.debug("------------------------------------");
         
         // construct the string to be signed
         String stringToSign = getStringToSign(SCHEME, ALGORITHM, dateTimeStamp, scope, canonicalRequest);
-        System.out.println("--------- String to sign -----------");
-        System.out.println(stringToSign);
-        System.out.println("------------------------------------");
+        logger.debug("--------- String to sign -----------");
+        logger.debug(stringToSign);
+        logger.debug("------------------------------------");
         
         // compute the signing key
         byte[] kSecret = (SCHEME + awsSecretKey).getBytes();

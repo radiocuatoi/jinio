@@ -1,5 +1,7 @@
 package us.cuatoi.jinio.s3.auth;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import us.cuatoi.jinio.s3.auth.util.BinaryUtils;
 
 import java.net.URL;
@@ -25,7 +27,7 @@ public class AWS4SignerForChunkedUpload extends AWS4SignerBase {
     private static final String CHUNK_SIGNATURE_HEADER = ";chunk-signature=";
     private static final int SIGNATURE_LENGTH = 64;
     private static final byte[] FINAL_CHUNK = new byte[0];
-    
+
     /**
      * Tracks the previously computed signature value; for chunk 0 this will
      * contain the signature included in the Authorization header. For
@@ -49,7 +51,7 @@ public class AWS4SignerForChunkedUpload extends AWS4SignerBase {
      * re-used for each chunk
      */
     private byte[] signingKey;
-    
+
     public AWS4SignerForChunkedUpload(URL endpointUrl, String httpMethod,
             String serviceName, String regionName) {
         super(endpointUrl, httpMethod, serviceName, regionName);
@@ -109,17 +111,17 @@ public class AWS4SignerForChunkedUpload extends AWS4SignerBase {
         String canonicalRequest = getCanonicalRequest(endpointUrl, httpMethod,
                 canonicalizedQueryParameters, canonicalizedHeaderNames,
                 canonicalizedHeaders, bodyHash);
-        System.out.println("--------- Canonical request --------");
-        System.out.println(canonicalRequest);
-        System.out.println("------------------------------------");
+        logger.debug("--------- Canonical request --------");
+        logger.debug(canonicalRequest);
+        logger.debug("------------------------------------");
         
         // construct the string to be signed
         String dateStamp = dateStampFormat.format(now);
         this.scope =  dateStamp + "/" + regionName + "/" + serviceName + "/" + TERMINATOR;
         String stringToSign = getStringToSign(SCHEME, ALGORITHM, dateTimeStamp, scope, canonicalRequest);
-        System.out.println("--------- String to sign -----------");
-        System.out.println(stringToSign);
-        System.out.println("------------------------------------");
+        logger.debug("--------- String to sign -----------");
+        logger.debug(stringToSign);
+        logger.debug("------------------------------------");
         
         // compute the signing key
         byte[] kSecret = (SCHEME + awsSecretKey).getBytes();

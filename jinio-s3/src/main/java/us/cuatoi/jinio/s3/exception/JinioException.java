@@ -8,6 +8,7 @@ import io.minio.ErrorCode;
 public class JinioException extends RuntimeException {
     private final ErrorCode code;
     private String bucketName;
+    private String objectName;
 
     public JinioException() {
         this(ErrorCode.INTERNAL_ERROR);
@@ -29,6 +30,15 @@ public class JinioException extends RuntimeException {
 
     public JinioException setBucketName(String bucketName) {
         this.bucketName = bucketName;
+        return this;
+    }
+
+    public String getObjectName() {
+        return objectName;
+    }
+
+    public JinioException setObjectName(String objectName) {
+        this.objectName = objectName;
         return this;
     }
 

@@ -1,5 +1,6 @@
 package us.cuatoi.jinio.s3;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,12 +41,13 @@ public abstract class JinioFilter implements Filter {
 
 
     private void printDebugInformation(HttpServletRequest request) {
+        logger.info("-----------------DEBUG-----------------------");
+        logger.info(request.getMethod() + " " + request.getRequestURI());
         logger.info("request.pathInfo=" + request.getPathInfo());
-        logger.info("request.requestURI=" + request.getRequestURI());
+        logger.info("request.servletPath=" + request.getServletPath());
         logger.info("request.requestURL=" + request.getRequestURL());
-        logger.info("request.method=" + request.getMethod());
         request.getParameterMap().forEach((key, value) -> {
-            logger.info("request.headers." + key + "=" + value);
+            logger.info("request.parameters." + key + "=" + StringUtils.join(value, ','));
 
         });
         Enumeration<String> headerNames = request.getHeaderNames();
@@ -53,6 +55,7 @@ public abstract class JinioFilter implements Filter {
             String key = headerNames.nextElement();
             logger.info("request.headers." + key + "=" + request.getHeader(key));
         }
+        logger.info("-----------END DEBUG-------------------------");
     }
 
     private boolean isS3Request(HttpServletRequest request) {

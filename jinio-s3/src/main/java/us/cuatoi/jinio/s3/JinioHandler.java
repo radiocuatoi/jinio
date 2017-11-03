@@ -10,12 +10,17 @@ import us.cuatoi.jinio.s3.auth.AWS4VerifierForAuthorizationHeader;
 import us.cuatoi.jinio.s3.exception.JinioException;
 import us.cuatoi.jinio.s3.message.ErrorResponseWriter;
 import us.cuatoi.jinio.s3.operation.bucket.*;
+import us.cuatoi.jinio.s3.operation.object.DeleteObjectOperation;
 import us.cuatoi.jinio.s3.operation.object.PutObjectOperation;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 import static org.apache.commons.lang3.StringUtils.*;
@@ -39,12 +44,13 @@ public class JinioHandler {
     }
 
     @SuppressWarnings("UnusedReturnValue")
-    public boolean handle() throws MalformedURLException {
+    public boolean handle() throws IOException {
         String requestId = UUID.randomUUID().toString();
         String serverId = "jinio";
+        Path data = null;
         try {
             new AWS4VerifierForAuthorizationHeader(context, request).verifyHeaders();
-            byte[] data = readAndVerifyContent();
+            data = readAndVerifyContent();
             if (targetRoot() && isGet()) {
                 //GET Buckets
                 return new GetBucketsOperation()
@@ -81,7 +87,13 @@ public class JinioHandler {
             //Object operation
             if (targetObject() && isPut()) {
                 //PUT Object
-                return new PutObjectOperation(request.getRequestURI())
+                return new PutObjectOperation(request.getRequestURI(), data)
+                        .setRequest(request).setResponse(response).setContext(context)
+                        .setRequestId(requestId).setServerId(serverId)
+                        .execute();
+            } else if (targetObject() && isDelete()) {
+                //PUT Object
+                return new DeleteObjectOperation(request.getRequestURI())
                         .setRequest(request).setResponse(response).setContext(context)
                         .setRequestId(requestId).setServerId(serverId)
                         .execute();
@@ -90,18 +102,25 @@ public class JinioHandler {
         } catch (Exception e) {
             ErrorCode code = ErrorCode.INTERNAL_ERROR;
             String bucketName = null;
+            String objectName = null;
             if (e instanceof JinioException) {
                 JinioException je = (JinioException) e;
                 code = je.getCode();
                 bucketName = je.getBucketName();
+                objectName = je.getObjectName();
             }
             logger.warn("Error while serving request ", e);
             return new ErrorResponseWriter(response)
                     .setRequestId(requestId).setServerId(serverId)
                     .setResource(request.getRequestURI())
                     .setBucketName(bucketName)
+                    .setObjectName(objectName)
                     .setError(code)
                     .write();
+        } finally {
+            if (data != null) {
+                Files.deleteIfExists(data);
+            }
         }
     }
 
@@ -151,20 +170,25 @@ public class JinioHandler {
         return methodMatch && slashMatch && parameterCountMatch && parameterMatch;
     }
 
-    private byte[] readAndVerifyContent() throws IOException {
-        byte[] data = IOUtils.toByteArray(request.getInputStream());
-        String providedSha256 = request.getHeader("x-amz-content-sha256");
-        String computedSha256 = data.length > 0 ? Hashing.sha256().hashBytes(data).toString() : AWS4SignerBase.EMPTY_BODY_SHA256;
+    private Path readAndVerifyContent() throws IOException {
+        Path content = Files.createTempFile("request", ".dat");
+        Files.copy(request.getInputStream(), content, StandardCopyOption.REPLACE_EXISTING);
+        long contentLength = Files.size(content);
+
+        String providedSha256 = this.request.getHeader("x-amz-content-sha256");
+        String computedSha256 = contentLength > 0 ?
+                com.google.common.io.Files.asByteSource(content.toFile()).hash(Hashing.sha256()).toString() :
+                AWS4SignerBase.EMPTY_BODY_SHA256;
         if (!equalsIgnoreCase(computedSha256, providedSha256)) {
             throw new JinioException(ErrorCode.BAD_DIGEST);
         }
-        String providedMd5 = request.getHeader("Content-MD5");
-        if (data.length > 0 && isNotBlank(providedMd5)) {
-            String computedMd5 = Hashing.md5().hashBytes(data).toString();
+        String providedMd5 = this.request.getHeader("Content-MD5");
+        if (contentLength > 0 && isNotBlank(providedMd5)) {
+            String computedMd5 = com.google.common.io.Files.asByteSource(content.toFile()).hash(Hashing.md5()).toString();
             if (!equalsIgnoreCase(providedMd5, computedMd5)) {
                 throw new JinioException(ErrorCode.INVALID_DIGEST);
             }
         }
-        return data;
+        return content;
     }
 }
