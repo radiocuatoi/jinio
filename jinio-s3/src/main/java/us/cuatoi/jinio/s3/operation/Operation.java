@@ -14,7 +14,11 @@ public abstract class Operation {
     protected String serverId;
     protected HttpServletRequest request;
     protected HttpServletResponse response;
-    protected JinioFilter context;
+    protected final JinioFilter context;
+
+    public Operation(JinioFilter context) {
+        this.context = context;
+    }
 
     public String getRequestId() {
         return requestId;
@@ -53,11 +57,6 @@ public abstract class Operation {
 
     public Operation setResponse(HttpServletResponse response) {
         this.response = response;
-        return this;
-    }
-
-    public Operation setContext(JinioFilter context) {
-        this.context = context;
         return this;
     }
 

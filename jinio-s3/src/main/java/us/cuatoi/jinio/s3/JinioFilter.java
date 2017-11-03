@@ -41,6 +41,7 @@ public abstract class JinioFilter implements Filter {
 
 
     private void printDebugInformation(HttpServletRequest request) {
+        logger.info("");
         logger.info("-----------------DEBUG-----------------------");
         logger.info(request.getMethod() + " " + request.getRequestURI());
         logger.info("request.pathInfo=" + request.getPathInfo());
@@ -56,6 +57,7 @@ public abstract class JinioFilter implements Filter {
             logger.info("request.headers." + key + "=" + request.getHeader(key));
         }
         logger.info("-----------END DEBUG-------------------------");
+        logger.info("");
     }
 
     private boolean isS3Request(HttpServletRequest request) {

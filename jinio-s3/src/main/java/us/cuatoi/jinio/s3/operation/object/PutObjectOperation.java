@@ -3,6 +3,7 @@ package us.cuatoi.jinio.s3.operation.object;
 import com.google.common.hash.Hashing;
 import com.google.gson.Gson;
 import org.apache.commons.lang3.StringUtils;
+import us.cuatoi.jinio.s3.JinioFilter;
 import us.cuatoi.jinio.s3.model.ObjectMetadata;
 
 import javax.servlet.http.HttpServletResponse;
@@ -17,24 +18,23 @@ public class PutObjectOperation extends ObjectOperation {
 
     private final Path data;
 
-    public PutObjectOperation(String requestURI, Path data) {
-        super(requestURI);
+    public PutObjectOperation(JinioFilter context, String requestURI, Path data) {
+        super(context,requestURI);
         this.data = data;
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public boolean execute() throws IOException {
         verifyBucketExists(bucketName);
         //Write file content. Need to handle part upload later.
-        Path objectPath = context.getDataPath().resolve(bucketName).resolve(objectName);
         Files.copy(data, objectPath);
 
         //We need to handle object metadata.
-        Path metadataPath = context.getDataPath().resolve(".metadata").resolve(bucketName).resolve(objectName);
-        Files.createDirectories(metadataPath.getParent());
+        Files.createDirectories(objectMetadataPath.getParent());
         ObjectMetadata metadata = new ObjectMetadata();
-        if (Files.exists(metadataPath)) {
-            try (BufferedReader br = Files.newBufferedReader(metadataPath)) {
+        if (Files.exists(objectMetadataPath)) {
+            try (BufferedReader br = Files.newBufferedReader(objectMetadataPath)) {
                 metadata = new Gson().fromJson(br, ObjectMetadata.class);
             }
         }
@@ -53,7 +53,7 @@ public class PutObjectOperation extends ObjectOperation {
                 metadata.getAttributes().put(header, request.getHeader(header));
             }
         }
-        try (BufferedWriter bw = Files.newBufferedWriter(metadataPath)) {
+        try (BufferedWriter bw = Files.newBufferedWriter(objectMetadataPath)) {
             new Gson().toJson(metadata, bw);
         }
 

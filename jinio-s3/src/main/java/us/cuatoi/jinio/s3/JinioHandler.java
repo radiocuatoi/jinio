@@ -2,7 +2,6 @@ package us.cuatoi.jinio.s3;
 
 import com.google.common.hash.Hashing;
 import io.minio.ErrorCode;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import us.cuatoi.jinio.s3.auth.AWS4SignerBase;
@@ -12,12 +11,11 @@ import us.cuatoi.jinio.s3.message.ErrorResponseWriter;
 import us.cuatoi.jinio.s3.operation.bucket.*;
 import us.cuatoi.jinio.s3.operation.object.DeleteObjectOperation;
 import us.cuatoi.jinio.s3.operation.object.PutObjectOperation;
+import us.cuatoi.jinio.s3.operation.service.GetBucketsOperation;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -53,48 +51,54 @@ public class JinioHandler {
             data = readAndVerifyContent();
             if (targetRoot() && isGet()) {
                 //GET Buckets
-                return new GetBucketsOperation()
-                        .setRequest(request).setResponse(response).setContext(context)
+                return new GetBucketsOperation(context)
+                        .setRequest(request).setResponse(response)
                         .setRequestId(requestId).setServerId(serverId)
                         .execute();
             }
             //Bucket operation
             if (targetBucket() && isHead()) {
                 //HEAD Bucket
-                return new HeadBucketOperation()
-                        .setRequest(request).setResponse(response).setContext(context)
+                return new HeadBucketOperation(context, request.getRequestURI())
+                        .setRequest(request).setResponse(response)
                         .setRequestId(requestId).setServerId(serverId)
                         .execute();
             } else if (targetBucket() && isPut()) {
                 //PUT Bucket
-                return new PutBucketOperation()
-                        .setRequest(request).setResponse(response).setContext(context)
+                return new PutBucketOperation(context, request.getRequestURI())
+                        .setRequest(request).setResponse(response)
                         .setRequestId(requestId).setServerId(serverId)
                         .execute();
             } else if (targetBucket() && isGet() && oneParameter("location")) {
                 //GET Bucket location
-                return new GetBucketLocationOperation()
-                        .setRequest(request).setResponse(response).setContext(context)
+                return new GetBucketLocationOperation(context, request.getRequestURI())
+                        .setRequest(request).setResponse(response)
+                        .setRequestId(requestId).setServerId(serverId)
+                        .execute();
+            } else if (targetBucket() && isGet() && hasParameter("uploads")) {
+                //GET Bucket uploads
+                return new GetBucketUploadsOperation(context, request.getRequestURI())
+                        .setRequest(request).setResponse(response)
                         .setRequestId(requestId).setServerId(serverId)
                         .execute();
             } else if (targetBucket() && isDelete()) {
                 //DELETE Bucket
-                return new DeleteBucketLocationOperation()
-                        .setRequest(request).setResponse(response).setContext(context)
+                return new DeleteBucketLocationOperation(context, request.getRequestURI())
+                        .setRequest(request).setResponse(response)
                         .setRequestId(requestId).setServerId(serverId)
                         .execute();
             }
             //Object operation
             if (targetObject() && isPut()) {
                 //PUT Object
-                return new PutObjectOperation(request.getRequestURI(), data)
-                        .setRequest(request).setResponse(response).setContext(context)
+                return new PutObjectOperation(context, request.getRequestURI(), data)
+                        .setRequest(request).setResponse(response)
                         .setRequestId(requestId).setServerId(serverId)
                         .execute();
             } else if (targetObject() && isDelete()) {
                 //PUT Object
-                return new DeleteObjectOperation(request.getRequestURI())
-                        .setRequest(request).setResponse(response).setContext(context)
+                return new DeleteObjectOperation(context, request.getRequestURI())
+                        .setRequest(request).setResponse(response)
                         .setRequestId(requestId).setServerId(serverId)
                         .execute();
             }
@@ -134,8 +138,12 @@ public class JinioHandler {
 
     private boolean oneParameter(String name) {
         boolean parameterSizeCorrect = request.getParameterMap().size() == 1;
-        boolean parameterExists = isBlank(name) || request.getParameter(name) != null;
+        boolean parameterExists = isBlank(name) || hasParameter(name);
         return parameterSizeCorrect && parameterExists;
+    }
+
+    private boolean hasParameter(String name) {
+        return request.getParameter(name) != null;
     }
 
     private boolean isPut() {
@@ -158,18 +166,7 @@ public class JinioHandler {
         return equalsIgnoreCase(method, "get");
     }
 
-    private boolean matchRequest(String method, int slashCount) {
-        return matchRequest(method, slashCount, 0, null);
-    }
-
-    private boolean matchRequest(String method, int slashCount, int parameterCount, String parameterName) {
-        boolean methodMatch = equalsIgnoreCase(this.method, method);
-        boolean slashMatch = slashCount == 0 || countMatches(request.getRequestURI(), '/') == slashCount;
-        boolean parameterCountMatch = parameterCount == 0 || request.getParameterMap().size() == parameterCount;
-        boolean parameterMatch = isBlank(parameterName) || request.getParameter(parameterName) != null;
-        return methodMatch && slashMatch && parameterCountMatch && parameterMatch;
-    }
-
+    @SuppressWarnings("deprecation")
     private Path readAndVerifyContent() throws IOException {
         Path content = Files.createTempFile("request", ".dat");
         Files.copy(request.getInputStream(), content, StandardCopyOption.REPLACE_EXISTING);

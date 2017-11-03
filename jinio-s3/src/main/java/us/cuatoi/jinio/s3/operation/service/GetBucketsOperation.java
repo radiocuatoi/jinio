@@ -1,11 +1,14 @@
-package us.cuatoi.jinio.s3.operation.bucket;
+package us.cuatoi.jinio.s3.operation.service;
 
 
+import us.cuatoi.jinio.s3.JinioFilter;
 import us.cuatoi.jinio.s3.exception.JinioException;
 import us.cuatoi.jinio.s3.message.BucketResponse;
 import us.cuatoi.jinio.s3.message.BucketsResponse;
 import us.cuatoi.jinio.s3.message.ListAllMyBucketsResponse;
 import us.cuatoi.jinio.s3.message.OwnerResponse;
+import us.cuatoi.jinio.s3.operation.Operation;
+import us.cuatoi.jinio.s3.operation.Verifier;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -14,7 +17,11 @@ import java.nio.file.attribute.BasicFileAttributes;
 
 import static io.minio.DateFormat.EXPIRATION_DATE_FORMAT;
 
-public class GetBucketsOperation extends BucketOperation {
+public class GetBucketsOperation extends Operation {
+
+    public GetBucketsOperation(JinioFilter context) {
+        super(context);
+    }
 
     @Override
     public boolean execute() throws IOException {
@@ -24,7 +31,7 @@ public class GetBucketsOperation extends BucketOperation {
         BucketsResponse b = new BucketsResponse();
         Files.list(context.getDataPath()).forEach((p) -> {
             try {
-                checkBucketName(p.getFileName().toString());
+                Verifier.verifyBucketName(p.getFileName().toString());
                 BasicFileAttributes attribute = Files.readAttributes(p, BasicFileAttributes.class);
                 BucketResponse br = new BucketResponse();
                 br.setName(p.getFileName().toString());
