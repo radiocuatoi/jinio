@@ -31,7 +31,7 @@ public abstract class ObjectOperation extends BucketOperation {
             objectName += "/" + paths[i];
         }
         objectPath = context.getDataPath().resolve(bucketName).resolve(objectName);
-        objectMetadataPath = context.getDataPath().resolve(JINIO).resolve(bucketName).resolve(objectName + ".json");
+        objectMetadataPath = bucketMetadataPath.resolve(objectName + ".json");
     }
 
     protected void verifyObjectExists() {
