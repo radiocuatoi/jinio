@@ -8,10 +8,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Stream;
 
-import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
-import static org.apache.commons.lang3.StringUtils.startsWith;
+import static org.apache.commons.lang3.StringUtils.*;
 import static us.cuatoi.jinio.s3.JinioFilter.DEFAULT_REGION;
 
 public class GetBucketUploadsOperation extends BucketOperation {
@@ -31,29 +33,10 @@ public class GetBucketUploadsOperation extends BucketOperation {
         String keyMarker = request.getHeader("key-marker");
         String uploadIdMarker = request.getHeader("upload-id-marker");
 
-        Stream<Path> prefixedPath = Files.list(bucketMetadataPath)
-                .flatMap((p) -> {
-                    String flatPath = p.relativize(context.getDataPath()).toString();
-                    if (Files.isRegularFile(p)) {
-                        if (startsWith(flatPath, prefix)) {
-                            return Stream.of(p);
-                        } else {
-                            return Stream.empty();
-                        }
-                    }
-
-                    if (startsWith(prefix, flatPath)) {
-                        try {
-                            return Files.list(p);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    } else {
-                        return Stream.empty();
-                    }
-                });
 
         return true;
     }
+
+
 
 }
