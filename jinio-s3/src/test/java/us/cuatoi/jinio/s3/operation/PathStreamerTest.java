@@ -9,17 +9,9 @@ import java.nio.file.Paths;
 public class PathStreamerTest {
     @Test
     public void testStream() throws Exception {
-        Path path = Paths.get("..").toAbsolutePath().normalize();
+        Path path = Paths.get("");
         System.out.println("---------------------------");
-        new PathStreamer(path).stream().getStream().forEach((p) -> {
-            System.out.println(p);
-        });
-        System.out.println("---------------------------");
-        new PathStreamer(path).setPrefix("jinio-s3").stream().getStream().forEach((p) -> {
-            System.out.println(p);
-        });
-        System.out.println("---------------------------");
-        new PathStreamer(path).setDelimiter(".").stream().getStream().forEach((p) -> {
+        new PathStreamer().from(path).getStream().forEach((p) -> {
             System.out.println(p);
         });
     }
