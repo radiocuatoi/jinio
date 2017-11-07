@@ -10,6 +10,7 @@ import us.cuatoi.jinio.s3.exception.JinioException;
 import us.cuatoi.jinio.s3.message.ErrorResponseWriter;
 import us.cuatoi.jinio.s3.operation.bucket.*;
 import us.cuatoi.jinio.s3.operation.object.DeleteObjectOperation;
+import us.cuatoi.jinio.s3.operation.object.InitiateMultipartUploadOperation;
 import us.cuatoi.jinio.s3.operation.object.PutObjectOperation;
 import us.cuatoi.jinio.s3.operation.service.GetBucketsOperation;
 
@@ -89,7 +90,7 @@ public class JinioHandler {
                         .execute();
             }
             //Object operation
-            if (targetObject() && isPut()) {
+            if (targetObject() && isPut() && noParameter()) {
                 //PUT Object
                 return new PutObjectOperation(context, request.getRequestURI(), data)
                         .setRequest(request).setResponse(response)
@@ -98,6 +99,12 @@ public class JinioHandler {
             } else if (targetObject() && isDelete()) {
                 //PUT Object
                 return new DeleteObjectOperation(context, request.getRequestURI())
+                        .setRequest(request).setResponse(response)
+                        .setRequestId(requestId).setServerId(serverId)
+                        .execute();
+            } else if (targetObject() && isPost() && hasParameter("uploads")) {
+                //POST Object Upload
+                return new InitiateMultipartUploadOperation(context, request.getRequestURI())
                         .setRequest(request).setResponse(response)
                         .setRequestId(requestId).setServerId(serverId)
                         .execute();
@@ -128,6 +135,10 @@ public class JinioHandler {
         }
     }
 
+    private boolean noParameter() {
+        return request.getParameterMap().size() == 0;
+    }
+
     private boolean targetObject() {
         return countMatches(request.getRequestURI(), '/') > 1;
     }
@@ -148,6 +159,10 @@ public class JinioHandler {
 
     private boolean isPut() {
         return equalsIgnoreCase(method, "put");
+    }
+
+    private boolean isPost() {
+        return equalsIgnoreCase(method, "post");
     }
 
     private boolean isHead() {

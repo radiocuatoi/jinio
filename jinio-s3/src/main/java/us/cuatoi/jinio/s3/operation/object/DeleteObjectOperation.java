@@ -25,7 +25,7 @@ public class DeleteObjectOperation extends ObjectOperation {
         setCommonHeaders();
         response.setStatus(HttpServletResponse.SC_NO_CONTENT);
         logger.info("DELETE Object:" + objectPath.toString());
-        return false;
+        return true;
     }
 
 }
