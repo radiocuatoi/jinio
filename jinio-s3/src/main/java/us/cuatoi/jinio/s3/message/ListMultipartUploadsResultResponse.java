@@ -1,12 +1,14 @@
 package us.cuatoi.jinio.s3.message;
 
 import com.google.api.client.util.Key;
+import io.minio.messages.Prefix;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ListMultipartUploadsResultResponse extends GenericXmlResponse {
     @Key("Upload")
-    List<UploadResponse> uploads;
+    List<UploadResponse> uploads = new ArrayList<>();
     @Key("Bucket")
     private String bucketName;
     @Key("KeyMarker")
@@ -21,6 +23,8 @@ public class ListMultipartUploadsResultResponse extends GenericXmlResponse {
     private int maxUploads;
     @Key("IsTruncated")
     private boolean isTruncated;
+    @Key("CommonPrefixes")
+    private List<PrefixResponse> commonPrefixes = new ArrayList<>();
 
     public ListMultipartUploadsResultResponse() {
         super.name = "ListMultipartUploadsResult";
@@ -88,5 +92,13 @@ public class ListMultipartUploadsResultResponse extends GenericXmlResponse {
 
     public void setTruncated(boolean truncated) {
         isTruncated = truncated;
+    }
+
+    public List<PrefixResponse> getCommonPrefixes() {
+        return commonPrefixes;
+    }
+
+    public void setCommonPrefixes(List<PrefixResponse> commonPrefixes) {
+        this.commonPrefixes = commonPrefixes;
     }
 }

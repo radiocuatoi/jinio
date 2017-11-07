@@ -17,11 +17,15 @@ public class DeleteBucketLocationOperation extends BucketOperation {
     public boolean execute() throws IOException {
         verifyBucketExists(bucketName);
         Path bucketPath = context.getDataPath().resolve(bucketName);
-        Files.delete(bucketPath);
+        Files.deleteIfExists(bucketPath);
+        Files.deleteIfExists(bucketMetadataPath);
+        Files.deleteIfExists(bucketUploadPath);
         setCommonHeaders();
         response.setStatus(HttpServletResponse.SC_OK);
         logger.info("DELETE Bucket:" + bucketName);
-        logger.info("DELETE Bucket:Deleted " + bucketPath.toString());
+        logger.info("DELETE Bucket:Deleted " + bucketPath);
+        logger.info("DELETE Bucket:Deleted " + bucketMetadataPath);
+        logger.info("DELETE Bucket:Deleted " + bucketUploadPath);
         return true;
     }
 

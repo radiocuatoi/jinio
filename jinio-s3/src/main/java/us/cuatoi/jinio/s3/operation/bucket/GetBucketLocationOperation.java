@@ -1,5 +1,6 @@
 package us.cuatoi.jinio.s3.operation.bucket;
 
+import us.cuatoi.jinio.s3.JinioConfiguration;
 import us.cuatoi.jinio.s3.JinioFilter;
 import us.cuatoi.jinio.s3.message.LocationConstraintResponse;
 
@@ -28,7 +29,7 @@ public class GetBucketLocationOperation extends BucketOperation {
         setCommonHeaders();
         response.setStatus(HttpServletResponse.SC_OK);
         response.getWriter().write(content);
-        response.setContentType("application/xml; charset=utf-8");
+        response.setContentType(JinioConfiguration.CONTENT_TYPE);
         logger.info("GET Bucket location:" + bucketName);
         logger.info("GET Bucket location:" + content);
         return true;

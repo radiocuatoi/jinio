@@ -19,6 +19,7 @@ import static org.apache.commons.lang3.StringUtils.*;
  * A database will speedup this process quickly but it will need time to get all the value.
  */
 public class PathWalker {
+    private final Path basePath;
     //input
     private String delimiter;
     private String prefix;
@@ -29,6 +30,11 @@ public class PathWalker {
     private List<Path> paths = new ArrayList<>();
     private Set<String> commonPrefixes = new HashSet<>();
     private boolean truncated;
+    private String nextMarker;
+
+    public PathWalker(Path basePath) {
+        this.basePath = basePath;
+    }
 
     public PathWalker setDelimiter(String delimiter) {
         this.delimiter = delimiter;
@@ -71,6 +77,10 @@ public class PathWalker {
         return this;
     }
 
+    public String getNextMarker() {
+        return nextMarker;
+    }
+
     public String getDelimiter() {
         return delimiter;
     }
@@ -88,7 +98,7 @@ public class PathWalker {
     }
 
     private void walkFolder(Path p) {
-        String path = p.toString();
+        String path = getRelativePath(p);
         if (isNotBlank(prefix) && startsWith(prefix, path)) {
             walkChild(p);
             return;
@@ -101,6 +111,10 @@ public class PathWalker {
             return;
         }
         walkChild(p);
+    }
+
+    private String getRelativePath(Path p) {
+        return basePath.toAbsolutePath().relativize(p.toAbsolutePath()).toString();
     }
 
     private boolean shouldAddCommonPrefix(String path) {
@@ -124,7 +138,7 @@ public class PathWalker {
     }
 
     private void walkFile(Path p) {
-        String path = p.toString();
+        String path = getRelativePath(p);
         if (isNotBlank(prefix) && !startsWith(path, prefix)) {
             return;
         }
@@ -138,7 +152,8 @@ public class PathWalker {
         }
         if (paths.size() < max) {
             paths.add(p);
-        } else {
+        } else if (isBlank(nextMarker)) {
+            nextMarker = path;
             truncated = true;
         }
 

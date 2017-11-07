@@ -15,8 +15,9 @@ public class PutBucketOperation extends BucketOperation {
 
     @Override
     public boolean execute() throws IOException {
-        Path bucketPath = context.getDataPath().resolve(bucketName);
         Files.createDirectories(bucketPath);
+        Files.createDirectories(bucketMetadataPath);
+        Files.createDirectories(bucketUploadPath);
         logger.info("PUT Bucket:" + bucketName);
         logger.info("PUT Bucket:Created " + bucketPath.toString());
         setCommonHeaders();

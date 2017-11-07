@@ -17,34 +17,33 @@ public class PathWalkerTest {
 
     @Test
     public void testWalkWithoutParameter() throws Exception {
-        PathWalker walker = new PathWalker().walk(Paths.get(""));
+        PathWalker walker = new PathWalker(Paths.get("")).walk(Paths.get(""));
         verify(walker);
     }
 
     @Test
     public void testWalkWithPrefix() throws Exception {
-        PathWalker walker = new PathWalker().setPrefix("src").walk(Paths.get(""));
+        PathWalker walker = new PathWalker(Paths.get("")).setPrefix("src").walk(Paths.get(""));
         verify(walker);
     }
 
     @Test
     public void testWalkWithDelimiter() throws Exception {
-
-        PathWalker walker = new PathWalker().setDelimiter(separator).walk(Paths.get(""));
+        PathWalker walker = new PathWalker(Paths.get("")).setDelimiter(separator).walk(Paths.get(""));
         verify(walker);
     }
 
     @Test
     public void testWalkWithPrefixAndDelimiter() throws Exception {
         String prefix = Paths.get("src", "main", "java", "us", "cuatoi", "jinio", "s3").toString() + separator;
-        PathWalker walker = new PathWalker().setPrefix(prefix).setDelimiter(separator).walk(Paths.get(""));
+        PathWalker walker = new PathWalker(Paths.get("")).setPrefix(prefix).setDelimiter(separator).walk(Paths.get(""));
         verify(walker);
     }
 
     @Test
     public void testTruncatedWalkWithPrefixAndDelimiter() throws Exception {
         String prefix = Paths.get("src", "main", "java", "us", "cuatoi", "jinio", "s3").toString() + separator;
-        PathWalker walker = new PathWalker().setPrefix(prefix).setDelimiter(separator)
+        PathWalker walker = new PathWalker(Paths.get("")).setPrefix(prefix).setDelimiter(separator)
                 .setMax(2)
                 .walk(Paths.get(""));
         verify(walker);
@@ -54,7 +53,7 @@ public class PathWalkerTest {
     public void testTruncatedWalkWithPrefixAndDelimiterFromMarker() throws Exception {
         String prefix = Paths.get("src", "main", "java", "us", "cuatoi", "jinio", "s3").toString() + separator;
         String marker = Paths.get("src", "main", "java", "us", "cuatoi", "jinio", "s3", "JinioConfiguration.java").toString();
-        PathWalker walker = new PathWalker().setPrefix(prefix).setDelimiter(separator)
+        PathWalker walker = new PathWalker(Paths.get("")).setPrefix(prefix).setDelimiter(separator)
                 .setMarker(marker)
                 .setMax(2)
                 .walk(Paths.get(""));
