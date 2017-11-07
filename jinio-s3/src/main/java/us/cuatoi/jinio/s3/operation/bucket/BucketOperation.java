@@ -16,12 +16,16 @@ public abstract class BucketOperation extends Operation {
     protected String bucketName;
     protected Path bucketPath;
     protected Path bucketMetadataPath;
+    protected Path bucketUploadPath;
 
     public BucketOperation(JinioFilter context, String requestURI) {
         super(context);
         bucketName = StringUtils.replace(requestURI, "/", "");
         bucketPath = context.getDataPath().resolve(bucketName);
-        bucketMetadataPath = context.getDataPath().resolve(JinioConfiguration.JINIO).resolve(bucketName);
+        bucketMetadataPath = context.getDataPath().resolve(JinioConfiguration.JINIO)
+                .resolve(JinioConfiguration.METADATA).resolve(bucketName);
+        bucketUploadPath = context.getDataPath().resolve(JinioConfiguration.JINIO)
+                .resolve(JinioConfiguration.UPLOADS).resolve(bucketName);
         Verifier.verifyBucketName(bucketName);
     }
 
