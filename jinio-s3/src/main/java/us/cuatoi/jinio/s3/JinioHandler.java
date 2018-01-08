@@ -11,6 +11,7 @@ import us.cuatoi.jinio.s3.message.ErrorResponseWriter;
 import us.cuatoi.jinio.s3.operation.bucket.*;
 import us.cuatoi.jinio.s3.operation.object.DeleteObjectOperation;
 import us.cuatoi.jinio.s3.operation.object.InitiateMultipartUploadOperation;
+import us.cuatoi.jinio.s3.operation.object.PutMultipartUploadOperation;
 import us.cuatoi.jinio.s3.operation.object.PutObjectOperation;
 import us.cuatoi.jinio.s3.operation.service.GetBucketsOperation;
 
@@ -93,6 +94,12 @@ public class JinioHandler {
             if (targetObject() && isPut() && noParameter()) {
                 //PUT Object
                 return new PutObjectOperation(context, request.getRequestURI(), data)
+                        .setRequest(request).setResponse(response)
+                        .setRequestId(requestId).setServerId(serverId)
+                        .execute();
+            } else if (targetObject() && isPut() && hasParameter("uploadId") ) {
+                //PUT Object
+                return new PutMultipartUploadOperation(context, request.getRequestURI(), data)
                         .setRequest(request).setResponse(response)
                         .setRequestId(requestId).setServerId(serverId)
                         .execute();

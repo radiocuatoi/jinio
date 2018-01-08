@@ -18,6 +18,7 @@ public class PutBucketOperation extends BucketOperation {
         Files.createDirectories(bucketPath);
         Files.createDirectories(bucketMetadataPath);
         Files.createDirectories(bucketUploadPath);
+        Files.createDirectories(bucketTmpPath);
         logger.info("PUT Bucket:" + bucketName);
         logger.info("PUT Bucket:Created " + bucketPath.toString());
         setCommonHeaders();

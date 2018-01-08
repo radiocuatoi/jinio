@@ -8,6 +8,8 @@ import us.cuatoi.jinio.s3.model.ObjectUpload;
 import us.cuatoi.jinio.s3.model.ObjectUploads;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.UUID;
 
 public class InitiateMultipartUploadOperation extends ObjectOperation {
@@ -27,8 +29,10 @@ public class InitiateMultipartUploadOperation extends ObjectOperation {
 
         ObjectUploads uploads = getUploads();
         uploads.getUploads().add(upload);
-
+        Path uploadPath = objectUploadPath.getParent().resolve(uploadId);
+        Files.createDirectories(uploadPath);
         saveUploads(uploads);
+
         InitiateMultipartUploadResultResponse result = new InitiateMultipartUploadResultResponse();
         result.setBucket(bucketName);
         result.setKey(objectName);

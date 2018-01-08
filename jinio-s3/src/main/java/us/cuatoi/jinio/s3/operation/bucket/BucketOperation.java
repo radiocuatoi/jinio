@@ -17,6 +17,7 @@ public abstract class BucketOperation extends Operation {
     protected Path bucketPath;
     protected Path bucketMetadataPath;
     protected Path bucketUploadPath;
+    protected Path bucketTmpPath;
 
     public BucketOperation(JinioFilter context, String requestURI) {
         super(context);
@@ -26,6 +27,8 @@ public abstract class BucketOperation extends Operation {
                 .resolve(JinioConfiguration.METADATA).resolve(bucketName);
         bucketUploadPath = context.getDataPath().resolve(JinioConfiguration.JINIO)
                 .resolve(JinioConfiguration.UPLOADS).resolve(bucketName);
+        bucketTmpPath = context.getDataPath().resolve(JinioConfiguration.JINIO)
+                .resolve(JinioConfiguration.TMP).resolve(bucketName);
         Verifier.verifyBucketName(bucketName);
     }
 

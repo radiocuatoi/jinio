@@ -37,8 +37,8 @@ public abstract class ObjectOperation extends BucketOperation {
             objectName += "/" + paths[i];
         }
         objectPath = context.getDataPath().resolve(bucketName).resolve(objectName);
-        objectMetadataPath = bucketMetadataPath.resolve(objectName);
-        objectUploadPath = bucketUploadPath.resolve(objectName);
+        objectMetadataPath = bucketMetadataPath.resolve(objectName).resolve("fs.json");
+        objectUploadPath = bucketUploadPath.resolve(objectName).resolve("uploads.json");
     }
 
     protected void verifyObjectExists() {
