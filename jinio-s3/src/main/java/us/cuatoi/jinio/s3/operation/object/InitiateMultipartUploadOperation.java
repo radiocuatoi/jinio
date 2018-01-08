@@ -3,7 +3,6 @@ package us.cuatoi.jinio.s3.operation.object;
 import us.cuatoi.jinio.s3.JinioConfiguration;
 import us.cuatoi.jinio.s3.JinioFilter;
 import us.cuatoi.jinio.s3.message.InitiateMultipartUploadResultResponse;
-import us.cuatoi.jinio.s3.model.ObjectMetadata;
 import us.cuatoi.jinio.s3.model.ObjectUpload;
 import us.cuatoi.jinio.s3.model.ObjectUploads;
 
@@ -42,11 +41,9 @@ public class InitiateMultipartUploadOperation extends ObjectOperation {
         setCommonHeaders();
         response.setContentType(JinioConfiguration.CONTENT_TYPE);
         response.getWriter().write(content);
-        logger.info("POST Object uploads:" + objectPath);
-        logger.info("POST Object uploads:uploads=" + uploads);
-        logger.info("POST Object uploads:result=" + content);
+        logger.info("POST Object multipart uploads:" + objectPath);
+        logger.info("POST Object multipart uploads:uploads=" + uploads);
+        logger.info("POST Object multipart uploads:result=" + content);
         return true;
     }
-
-
 }

@@ -1,10 +1,8 @@
 package us.cuatoi.jinio.s3.operation.object;
 
-import com.google.common.hash.Hashing;
 import io.minio.ErrorCode;
 import us.cuatoi.jinio.s3.JinioFilter;
 import us.cuatoi.jinio.s3.exception.JinioException;
-import us.cuatoi.jinio.s3.model.ObjectMetadata;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -33,6 +31,13 @@ public class PutMultipartUploadOperation extends ObjectOperation {
         }
         Path uploadPartPath = uploadPath.resolve(partNumber);
         Files.copy(data, uploadPartPath);
+
+        response.setStatus(HttpServletResponse.SC_OK);
+        setCommonHeaders();
+        logger.info("PUT Object multipart uploads:" + objectPath);
+        logger.info("PUT Object multipart uploads:uploadId=" + uploadId);
+        logger.info("PUT Object multipart uploads:partNumber=" + partNumber);
+        logger.info("PUT Object multipart uploads:result=OK");
         return true;
     }
 
